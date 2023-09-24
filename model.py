@@ -2,12 +2,14 @@ import yfinance as yf
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
+from sklearn.pipeline import make_pipeline
 from sklearn.metrics import mean_squared_error
 
-# Function to train a stock price predictor for a given stock symbol
-def train_stock_price_predictor(symbol, period="max"):
+# Function to train a stock price predictor for a given stock symbol using polynomial regression
+def train_stock_price_predictor(symbol, degree=2, period="max"):
     # Download the historical data for the given stock symbol
     stock = yf.Ticker(symbol)
     stock_data = stock.history(period=period)
@@ -28,22 +30,13 @@ def train_stock_price_predictor(symbol, period="max"):
     X = stock_data[['Open', 'Close', 'High', 'Low', 'Volume']]
     y = stock_data['Future Open']
 
-    # Split the data into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # Create a polynomial regression model
+    model = make_pipeline(PolynomialFeatures(degree), LinearRegression())
 
-    # Train the linear regression model
-    model = LinearRegression()
-    model.fit(X_train, y_train)
-
-    # Make predictions on the testing set
-    predictions = model.predict(X_test)
-
-    # Calculate the mean squared error of the model
-    mse = mean_squared_error(y_test, predictions)
-    st.write(f"Mean Squared Error for {symbol}: {mse}")
+    # Fit the polynomial regression model to the data
+    model.fit(X, y)
 
     return model
-
 # Function to predict the future opening price of a stock using a trained model
 def predict_future_opening_price(model, symbol, historical_data):
     # Extract the feature values (Open, Close, High, Low, Volume) for the last data point
