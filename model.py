@@ -12,9 +12,11 @@ def train_stock_price_predictor(symbol, period="max"):
     stock = yf.Ticker(symbol)
     stock_data = stock.history(period=period)
 
-    # Ensure that the stock data contains the necessary columns (Open, Close, Volume)
-    if 'Open' not in stock_data.columns or 'Close' not in stock_data.columns or 'Volume' not in stock_data.columns:
-        raise ValueError("Stock data is missing required columns (Open, Close, Volume).")
+    # Ensure that the stock data contains the necessary columns (Open, Close, High, Low, Volume)
+    if 'Open' not in stock_data.columns or 'Close' not in stock_data.columns \
+        or 'High' not in stock_data.columns or 'Low' not in stock_data.columns \
+        or 'Volume' not in stock_data.columns:
+        raise ValueError("Stock data is missing required columns (Open, Close, High, Low, Volume).")
 
     # Shift the opening price data to predict the future opening price (next day)
     stock_data['Future Open'] = stock_data['Open'].shift(-1)
@@ -23,7 +25,7 @@ def train_stock_price_predictor(symbol, period="max"):
     stock_data = stock_data.dropna()
 
     # Split the data into features (X) and target (y)
-    X = stock_data[['Open', 'Close', 'Volume']]
+    X = stock_data[['Open', 'Close', 'High', 'Low', 'Volume']]
     y = stock_data['Future Open']
 
     # Split the data into training and testing sets
@@ -44,10 +46,10 @@ def train_stock_price_predictor(symbol, period="max"):
 
 # Function to predict the future opening price of a stock using a trained model
 def predict_future_opening_price(model, symbol, historical_data):
-    # Extract the feature values (Open, Close, Volume) for the last data point
-    latest_features = historical_data[['Open', 'Close', 'Volume']].iloc[-1].values
+    # Extract the feature values (Open, Close, High, Low, Volume) for the last data point
+    latest_features = historical_data[['Open', 'Close', 'High', 'Low', 'Volume']].iloc[-1].values
 
-    # Reshape the features to have the shape (1, 3)
+    # Reshape the features to have the shape (1, 5)
     latest_features = latest_features.reshape(1, -1)
 
     # Use the trained model to make predictions on the latest data
