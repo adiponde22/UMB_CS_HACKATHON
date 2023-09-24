@@ -55,6 +55,18 @@ def predict_future_opening_price(model, symbol, historical_data):
 
     return predicted_opening_price
 
+
+def make_recommendation(predicted_opening_price, current_closing_price):
+    if predicted_opening_price > current_closing_price:
+        recommendation = "Recommendation: Buy"
+        style = "background-color: #16915a; padding: 10px; border-radius: 5px;"
+    else:
+        recommendation = "Recommendation: Do Not Buy"
+        style = "background-color: #a11516; padding: 10px; border-radius: 5px;"
+
+    return f'<div style="{style}">{recommendation}</div>'
+
+
 # Streamlit app
 def main():
     st.title("Stock Opening Price Predictor")
@@ -81,6 +93,15 @@ def main():
         # Display the prediction
         st.subheader(f"Predicted future opening price for {stock_symbol} (next day): {rounded_predicted_opening_price}")
 
+
+        current_opening_price = historical_data['Open'].iloc[-1]
+        current_closing_price = historical_data['Close'].iloc[-1]
+        current_volume = historical_data['Volume'].iloc[-1]
+
+        # Provide a recommendation based on the prediction
+        recommendation_html = make_recommendation(predicted_opening_price, current_closing_price)
+        st.markdown(recommendation_html, unsafe_allow_html=True)
+
         # Plot only the 'Open' and 'Close' columns from historical data
         st.subheader(f"Price History for the Past Week ({start_date.date()} to {end_date.date()}):")
         plt.figure(figsize=(10, 6))
@@ -94,9 +115,8 @@ def main():
 
         # Calculate and display current metrics
         st.subheader("Current Metrics:")
-        st.write(f"- Latest Opening Price: {round(historical_data['Open'].iloc[-1], 2)}")
-        st.write(f"- Latest Closing Price: {round(historical_data['Close'].iloc[-1], 2)}")
-        st.write(f"- Latest Volume: {round(historical_data['Volume'].iloc[-1], 2)}")
-
+        st.write(f"- Latest Opening Price: {round(current_opening_price, 2)}")
+        st.write(f"- Latest Closing Price: {round(current_closing_price, 2)}")
+        st.write(f"- Latest Volume Price: {round(current_volume, 2)}")
 if __name__ == "__main__":
     main()
