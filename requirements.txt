@@ -1,4 +1,5 @@
-yfinance
-scikit-learn
-matplotlib
+yfinance == 0.2.30
+scikit-learn == 1.3.1
+matplotlib == 3.8.0
+pandas == 2.1.1
 
