@@ -7,8 +7,7 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
-from sklearn.metrics import mean_squared_error
-
+from sklearn.metrics import mean_squared_error, r2_score
 
 # Function to train a stock price predictor for a given stock symbol using polynomial regression
 def train_stock_price_predictor(symbol, degree=2, period="max"):
@@ -65,7 +64,7 @@ def predict_future_opening_price(model, symbol, historical_data):
         return predicted_opening_price
 
     except Exception as e:
-        st.error(f"Error: {e}")
+        st.error(f"ENTER A VALID STOCK TICKER")
         return None
 
 
@@ -82,7 +81,7 @@ def main():
 
         # Fetch the historical data for the specified stock for a longer period (e.g., 1 year)
         stock = yf.Ticker(stock_symbol)
-        historical_data = stock.history(period="1y")
+        historical_data = stock.history(period='5y')
 
         # Get the latest price from the last row of historical_data
         latest_open_price = historical_data['Open'].iloc[-1]
@@ -111,20 +110,23 @@ def main():
 
         # Calculate the mean squared error (MSE)
         mse = mean_squared_error(y_true, predictions)
-
+        r_squared = r2_score(y_true, predictions)
         # Provide a recommendation based on the prediction and latest price
         recommendation_html = recommend.make_recommendation(predicted_opening_price, latest_close_price)
         st.markdown(recommendation_html, unsafe_allow_html=True)
         st.markdown(f"""<div style="padding-left: 10px;"> Mean Squared Error (MSE): {mse:.2f} </div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div style="padding-left: 10px;"> R-squared (R²) Score: {r_squared:.2f} </div>""", unsafe_allow_html=True)
 
 
         # Plot the 'Open' and 'Close' columns from historical data for the entire period
         st.subheader(f"Price History for the Past Year:")
         plt.figure(figsize=(10, 6))
+
         plt.plot(historical_data.index, historical_data['Open'], label='Open Price', color='blue')
         plt.plot(historical_data.index, historical_data['Close'], label='Close Price', color='green')
         plt.xlabel('Date')
         plt.ylabel('Price')
+
         plt.title(f'Price History for {stock_symbol}')
         plt.legend()
         st.pyplot(plt)
