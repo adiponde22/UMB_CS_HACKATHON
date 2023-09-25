@@ -2,6 +2,7 @@ import yfinance as yf
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import recommend
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
@@ -68,16 +69,6 @@ def predict_future_opening_price(model, symbol, historical_data):
         return None
 
 
-def make_recommendation(predicted_opening_price, current_closing_price):
-    if predicted_opening_price > current_closing_price:
-        recommendation = "Recommendation: Buy"
-        style = "background-color: #16915a; padding: 10px; border-radius: 5px;"
-    else:
-        recommendation = "Recommendation: Do Not Buy"
-        style = "background-color: #a11516; padding: 10px; border-radius: 5px;"
-
-    return f'<div style="{style}">{recommendation}</div>'
-
 
 # Streamlit app
 def main():
@@ -111,7 +102,7 @@ def main():
         current_volume = historical_data['Volume'].iloc[-1]
 
         # Provide a recommendation based on the prediction
-        recommendation_html = make_recommendation(predicted_opening_price, current_closing_price)
+        recommendation_html = recommend.make_recommendation(predicted_opening_price, current_closing_price)
         st.markdown(recommendation_html, unsafe_allow_html=True)
 
         # Plot only the 'Open' and 'Close' columns from historical data
