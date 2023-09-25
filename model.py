@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.metrics import mean_squared_error
 
+
 # Function to train a stock price predictor for a given stock symbol using polynomial regression
 def train_stock_price_predictor(symbol, degree=2, period="max"):
     try:
@@ -37,7 +38,6 @@ def train_stock_price_predictor(symbol, degree=2, period="max"):
 
         # Fit the polynomial regression model to the data
         model.fit(X, y)
-
         return model
 
     except Exception as e:
@@ -70,7 +70,6 @@ def predict_future_opening_price(model, symbol, historical_data):
 
 
 
-# Streamlit app
 def main():
     st.title("Stock Opening Price Predictor")
 
@@ -81,11 +80,16 @@ def main():
         # Train the stock price predictor for the specified stock
         trained_model = train_stock_price_predictor(stock_symbol)
 
-        # Fetch the historical data for the specified stock for the past week (5 trading days)
+        # Fetch the historical data for the specified stock for a longer period (e.g., 1 year)
         stock = yf.Ticker(stock_symbol)
-        start_date = pd.Timestamp.now() - pd.DateOffset(days=5)
-        end_date = pd.Timestamp.now()
-        historical_data = stock.history(period="1d", start=start_date, end=end_date)
+        historical_data = stock.history(period="1y")
+
+        # Get the latest price from the last row of historical_data
+        latest_open_price = historical_data['Open'].iloc[-1]
+        latest_close_price = historical_data['Close'].iloc[-1]
+        latest_volume = historical_data['Volume'].iloc[-1]
+        latest_high_price = historical_data['High'].iloc[-1]
+        latest_low_price = historical_data['Low'].iloc[-1]
 
         # Use the trained model to predict the future opening price for the next day
         predicted_opening_price = predict_future_opening_price(trained_model, stock_symbol, historical_data)
@@ -95,31 +99,47 @@ def main():
 
         # Display the prediction
         st.subheader(f"Predicted future opening price for {stock_symbol} (next day): {rounded_predicted_opening_price}")
+        # Calculate the R-squared score to evaluate model fit
 
+        # Calculate the actual opening prices (y_true) by shifting the 'Open' prices
+        y_true = historical_data['Open'].shift(-1)
+        y_true = y_true.dropna()  # Remove NaN values
 
-        current_opening_price = historical_data['Open'].iloc[-1]
-        current_closing_price = historical_data['Close'].iloc[-1]
-        current_volume = historical_data['Volume'].iloc[-1]
+        # Calculate predictions using the model
+        predictions = trained_model.predict(historical_data[['Open', 'Close', 'High', 'Low', 'Volume']])
+        predictions = predictions[:-1]  # Exclude the last prediction, which has no corresponding y_true
 
-        # Provide a recommendation based on the prediction
-        recommendation_html = recommend.make_recommendation(predicted_opening_price, current_closing_price)
+        # Calculate the mean squared error (MSE)
+        mse = mean_squared_error(y_true, predictions)
+
+        # Provide a recommendation based on the prediction and latest price
+        recommendation_html = recommend.make_recommendation(predicted_opening_price, latest_close_price)
         st.markdown(recommendation_html, unsafe_allow_html=True)
+        st.markdown(f"""<div style="padding-left: 10px;"> Mean Squared Error (MSE): {mse:.2f} </div>""", unsafe_allow_html=True)
 
-        # Plot only the 'Open' and 'Close' columns from historical data
-        st.subheader(f"Price History for the Past Week ({start_date.date()} to {end_date.date()}):")
+
+        # Plot the 'Open' and 'Close' columns from historical data for the entire period
+        st.subheader(f"Price History for the Past Year:")
         plt.figure(figsize=(10, 6))
-        plt.plot(historical_data['Open'], label='Open Price', color='blue')
-        plt.plot(historical_data['Close'], label='Close Price', color='green')
+        plt.plot(historical_data.index, historical_data['Open'], label='Open Price', color='blue')
+        plt.plot(historical_data.index, historical_data['Close'], label='Close Price', color='green')
         plt.xlabel('Date')
         plt.ylabel('Price')
         plt.title(f'Price History for {stock_symbol}')
         plt.legend()
         st.pyplot(plt)
 
-        # Calculate and display current metrics
+        # Display current metrics in a table
         st.subheader("Current Metrics:")
-        st.write(f"- Latest Opening Price: {round(current_opening_price, 2)}")
-        st.write(f"- Latest Closing Price: {round(current_closing_price, 2)}")
-        st.write(f"- Latest Volume Price: {round(current_volume, 2)}")
+
+        metrics_table = f"""
+        | Metric          | Value             | Metric          | Value             |
+        |-----------------|-------------------|-----------------|-------------------|
+        | Latest OPEN Price   | {round(latest_open_price, 2)} | Latest CLOSING Price | {round(latest_close_price, 2)} |
+        | Latest HIGH         | {round(latest_high_price, 2)} | Latest LOW          | {round(latest_low_price, 2)} 
+        | Latest VOLUME       | {round(latest_volume, 2)} |
+        """
+        st.markdown(metrics_table, unsafe_allow_html=True)
+
 if __name__ == "__main__":
     main()
