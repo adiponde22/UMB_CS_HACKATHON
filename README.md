@@ -1,83 +1,74 @@
-# UMB_CS_HACKATHON
-repo for umb cs hackathon team: GPT-5
+# Stock Opening Price Predictor
 
-# Stock Price Predictor
-
-A Python-based web application that predicts the future opening price of a stock using historical data from Yahoo Finance. The application is built using Streamlit and scikit-learn.
+The Stock Opening Price Predictor is a Python-based web application built with Streamlit that allows users to predict the future opening price of a stock using historical stock price data and a polynomial regression model. This application provides insights into stock price trends and offers predictions for the next day's opening price.
 
 ## Features
 
-- Predicts the future opening price of a specified stock for the next trading day.
-- Displays the historical 'Open' and 'Close' price data for the past week.
-- Calculates and displays current metrics such as the latest opening price, closing price, and volume.
-- Provides a user-friendly interface for entering stock symbols and viewing predictions.
+- Predicts the future opening price of a stock based on historical data.
+- Displays historical price charts for the past five years.
+- Provides key metrics and recommendations for the specified stock.
+- Calculates and displays the Mean Squared Error (MSE) and R-squared (R²) score to evaluate model accuracy.
 
-## Demo
+## Getting Started
 
-You can try out the live demo of this application [here](link_to_demo).
+Follow these instructions to set up and run the Stock Opening Price Predictor on your local machine.
 
-## Installation
+### Prerequisites
 
-To run the application locally, follow these steps:
+- Python 3.7+
+- pip (Python package manager)
 
-1. Clone the repository:
+### Installation
 
-   ```bash
-   git clone https://github.com/your_username/stock-price-predictor.git
-   cd stock-price-predictor
-   ```
+1. Clone the repository to your local machine:
 
-2. Install the required Python packages:
+   ```bash
+   git clone https://github.com/adiponde22/UMB_CS_HACKATHON.git
+   ```
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+2. Navigate to the project directory:
 
-3. Run the Streamlit app:
+   ```bash
+   cd UMB_CS_HACKATHON
+   ```
 
-   ```bash
-   streamlit run app.py
-   ```
+3. Install the required Python packages:
 
-4. Open your web browser and go to `http://localhost:8501` to use the application.
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-## Usage
+### Usage
 
-1. Enter the stock symbol (e.g., AAPL) in the text input field.
-2. Click the "Predict" button to see the predicted future opening price.
-3. View the historical price graph and current metrics below the prediction.
+1. Run the Streamlit application:
 
-## Technologies Used
+   ```bash
+   streamlit run model.py
+   ```
 
-- Python
-- Streamlit
-- scikit-learn
-- yfinance
-- Matplotlib
+2. Open a web browser and go to the provided URL (usually `http://localhost:8501`).
 
-## Contributing
+3. Enter the stock symbol (e.g., AAPL) in the input field and click "Predict."
 
-Contributions are welcome! If you would like to contribute to this project, please follow these guidelines:
+4. View the predicted future opening price, historical price charts, metrics, and recommendations.
 
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Make your changes and test them.
-4. Commit your changes with clear commit messages.
-5. Push your changes to your fork.
-6. Create a pull request to the main repository.
+### Built With
 
-## License
+- [Streamlit](https://www.streamlit.io/)
+- [yfinance](https://pypi.org/project/yfinance/)
+- [pandas](https://pandas.pydata.org/)
+- [matplotlib](https://matplotlib.org/)
+- [scikit-learn](https://scikit-learn.org/)
+
+### License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
+### Acknowledgments
 
-- The application uses data from Yahoo Finance.
+- Data provided by Yahoo Finance via the `yfinance` library.
+- Stock price predictions based on polynomial regression.
 
-## Contact
+---
 
-If you have any questions or feedback, feel free to contact us at [your_email@example.com].
-
-```
-
-Replace the placeholders such as `your_username`, `link_to_demo`, and `your_email@example.com` with your actual information. Additionally, make sure to include the appropriate licensing information and acknowledgments for any external data or libraries used in your project.
+You can customize this README to include additional information or specific details about your project. Don't forget to replace the placeholders with your actual project details and URLs.
