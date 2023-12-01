@@ -89,15 +89,10 @@ def main():
     if stock_symbol:
 
         with st.spinner("While you wait..."):
-
             loading_placeholder = st.empty()
             loading_placeholder1 = st.empty()
-            # Display club logo
             loading_placeholder.markdown("Join UMB Rocket Design & Automation Systems!!!", unsafe_allow_html=True)
             loading_placeholder1.image("clogo.png", caption="", width=800)
-
-
-
 
             # Train the stock price predictor for the specified stock
             trained_model = train_stock_price_predictor(stock_symbol)
