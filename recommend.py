@@ -8,3 +8,11 @@ def make_recommendation(predicted_opening_price, latest_price):
         style = "background-color: #a11516; padding: 10px; border-radius: 5px;"
 
     return f'<div style="{style}">{recommendation}</div>'
+
+footerStr = """
+            <hr style="margin-top: 2em; margin-bottom: 1em;">
+            <div style="text-align: center; padding-bottom: 1em;">
+                Built by Aditya M. Ponde<br>
+                Licensed under the MIT License
+            </div>
+            """
